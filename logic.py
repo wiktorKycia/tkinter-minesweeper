@@ -1,7 +1,7 @@
 import numpy as np
 
 class Board:
-    def __init__(self, width, height, num_mines):
+    def __init__(self, width:int, height:int, num_mines:int):
         """Initialize the game board."""
         self.width = width
         self.height = height
@@ -18,7 +18,7 @@ class Board:
             self.board[y][x] = 1
         print(self.board)
     
-    def count_mines_around(self, x, y) -> int:
+    def count_mines_around(self, x:int, y:int) -> int:
         result = 0
         for i in range(max(y-1, 0), min(y+2, self.height)):
             for j in range(max(x-1, 0), min(x+2, self.width)):

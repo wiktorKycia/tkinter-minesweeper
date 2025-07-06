@@ -43,7 +43,16 @@ max_mines = int(rows.get() * columns.get() * 0.35)
 entry_mines = tk.Spinbox(frame, from_=1, to=max_mines, width=5, textvariable=mines)
 entry_mines.grid(row=2, column=1)
 
-def start_game():
+def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], x:int, y:int) -> None:
+    label = tk.Label(frame)
+    if board.board[y][x] == 1:
+        print("this was a bomb")
+        label.config(text="x")
+    else:
+        label.config(text=board.count_mines_around(x, y))
+    buttons[y][x] = label
+
+def start_game() -> None:
     for widget in root.winfo_children():
         widget.destroy()
     label = tk.Label(root, text=f'rows={rows.get()}, columns={columns.get()}, mines={mines.get()}')
@@ -57,6 +66,7 @@ def start_game():
         row_of_buttons = []
         for col in range(board.width):
             button = tk.Button(frame, width=1, height=1)
+            button.config(command=lambda: discover_tile(board, frame, buttons, x=col, y=row))
             button.grid(row=row, column=col)
             row_of_buttons.append(button)
         buttons.append(row_of_buttons)
