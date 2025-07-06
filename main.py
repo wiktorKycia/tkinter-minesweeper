@@ -51,13 +51,10 @@ def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], x:int, y:int
     else:
         label.config(text=board.count_mines_around(x, y))
     buttons[y][x] = label
+    
+    display_game_frame(buttons, frame)
 
 def start_game() -> None:
-    for widget in root.winfo_children():
-        widget.destroy()
-    label = tk.Label(root, text=f'rows={rows.get()}, columns={columns.get()}, mines={mines.get()}')
-    label.pack()
-    
     board = Board(rows.get(), columns.get(), mines.get())
     buttons = []
     
@@ -67,9 +64,19 @@ def start_game() -> None:
         for col in range(board.width):
             button = tk.Button(frame, width=1, height=1)
             button.config(command=lambda: discover_tile(board, frame, buttons, x=col, y=row))
-            button.grid(row=row, column=col)
             row_of_buttons.append(button)
         buttons.append(row_of_buttons)
+    
+    display_game_frame(buttons, frame)
+
+def display_game_frame(buttons:list[list], frame: tk.Frame) -> None:
+    for widget in frame.winfo_children():
+        widget.destroy()
+    
+    # frame = tk.Frame(root)
+    for y, row in enumerate(buttons):
+        for x, button in enumerate(row):
+            button.grid(row=y, column=x)
     frame.pack(fill=tk.BOTH)
 
 start_button = tk.Button(root, text="Start Game", command=start_game, padx=10, pady=5)
