@@ -29,6 +29,6 @@ class Board:
                     pass
         return result                
 
-b = Board(6, 4, 9)
-b.create_mines()
-print([[b.count_mines_around(i,j) for i in range(b.width)] for j in range(b.height)])
+# b = Board(6, 4, 9)
+# b.create_mines()
+# print([[b.count_mines_around(i,j) for i in range(b.width)] for j in range(b.height)])

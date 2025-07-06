@@ -48,6 +48,19 @@ def start_game():
         widget.destroy()
     label = tk.Label(root, text=f'rows={rows.get()}, columns={columns.get()}, mines={mines.get()}')
     label.pack()
+    
+    board = Board(rows.get(), columns.get(), mines.get())
+    buttons = []
+    
+    frame = tk.Frame(root)
+    for row in range(board.height):
+        row_of_buttons = []
+        for col in range(board.width):
+            button = tk.Button(frame, width=1, height=1)
+            button.grid(row=row, column=col)
+            row_of_buttons.append(button)
+        buttons.append(row_of_buttons)
+    frame.pack(fill=tk.BOTH)
 
 start_button = tk.Button(root, text="Start Game", command=start_game, padx=10, pady=5)
 start_button.pack()
