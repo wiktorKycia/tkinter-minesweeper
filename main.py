@@ -1,6 +1,5 @@
-def main():
-    print("Hello from tkinter-minesweeper!")
+import tkinter as tk
+root = tk.Tk()
+root.geometry("450x400")
 
-
-if __name__ == "__main__":
-    main()
+root.mainloop()
