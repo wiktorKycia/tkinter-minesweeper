@@ -53,10 +53,31 @@ class Displayer:
         for widget in self.frame.winfo_children():
             widget.destroy()
     
+    def setup_frame(self) -> None:
+        for row in range(self.board.height):
+            row_of_buttons = []
+            for col in range(self.board.width):
+                button = tk.Button(self.frame, width=1, height=1)
+                button.config(command=lambda: self.discover_tile(x=col, y=row))
+                button.grid(row=row, column=col)
+                row_of_buttons.append(button)
+            self.buttons.append(row_of_buttons)
+        self.frame.pack(fill=tk.BOTH)
     
+    def discover_tile(self, x:int, y:int) -> None:
+        label = tk.Label(frame)
+        if self.board.board[y][x] == 1:
+            label.config(text="x")
+        else:
+            label.config(text=self.board.count_mines_around(x, y))
+        self.buttons[y][x] = label
+        
+        self.clear_frame()
+        self.setup_frame()
+        
 
 
-def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], x:int, y:int) -> None:
+def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], ) -> None:
     label = tk.Label(frame)
     if board.board[y][x] == 1:
         print("this was a bomb")
