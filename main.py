@@ -43,6 +43,38 @@ max_mines = int(rows.get() * columns.get() * 0.35)
 entry_mines = tk.Spinbox(frame, from_=1, to=max_mines, width=5, textvariable=mines)
 entry_mines.grid(row=2, column=1)
 
+class Tile:
+    def __init__(self, board:Board, frame:tk.Frame, coords:tuple[int,int], bomb: bool, is_discovered: bool = False, content: str|None = None) -> None:
+        self.widget: tk.Widget
+        
+        self.x: int
+        self.y: int
+        self.x, self.y = coords
+        
+        self.bomb: bool = bomb
+        self.discovered: bool = is_discovered
+        
+        self.content: str
+        
+        if is_discovered:
+            self.widget = tk.Label(frame, width=1, height=1)
+            self.content = content if content else ""
+            self.widget.config(text=self.content)
+        else:
+            self.widget = tk.Button(frame, width=1, height=1)
+            self.widget.config(command=lambda: self.discover(board))
+    
+    def discover(self, board:Board) -> None:
+        self.widget = tk.Label(frame, width=1, height=1)
+        if self.bomb:
+            self.widget.config(text="x")
+        else:
+            self.widget.config(text=board.count_mines_around(self.x, self.y))
+    
+    
+    
+        
+
 class Displayer:
     def __init__(self, board: Board) -> None:
         self.board: Board = board
@@ -74,44 +106,6 @@ class Displayer:
         
         self.clear_frame()
         self.setup_frame()
-        
-
-
-def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], ) -> None:
-    label = tk.Label(frame)
-    if board.board[y][x] == 1:
-        print("this was a bomb")
-        label.config(text="x")
-    else:
-        label.config(text=board.count_mines_around(x, y))
-    buttons[y][x] = label
-    
-    display_game_frame(buttons, frame)
-
-def start_game() -> None:
-    board = Board(rows.get(), columns.get(), mines.get())
-    buttons = []
-    
-    frame = tk.Frame(root)
-    for row in range(board.height):
-        row_of_buttons = []
-        for col in range(board.width):
-            button = tk.Button(frame, width=1, height=1)
-            button.config(command=lambda: discover_tile(board, frame, buttons, x=col, y=row))
-            row_of_buttons.append(button)
-        buttons.append(row_of_buttons)
-    
-    display_game_frame(buttons, frame)
-
-def display_game_frame(buttons:list[list], frame: tk.Frame) -> None:
-    for widget in frame.winfo_children():
-        widget.destroy()
-    
-    # frame = tk.Frame(root)
-    for y, row in enumerate(buttons):
-        for x, button in enumerate(row):
-            button.grid(row=y, column=x)
-    frame.pack(fill=tk.BOTH)
 
 start_button = tk.Button(root, text="Start Game", command=start_game, padx=10, pady=5)
 start_button.pack()
