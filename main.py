@@ -43,6 +43,19 @@ max_mines = int(rows.get() * columns.get() * 0.35)
 entry_mines = tk.Spinbox(frame, from_=1, to=max_mines, width=5, textvariable=mines)
 entry_mines.grid(row=2, column=1)
 
+class Displayer:
+    def __init__(self, board: Board) -> None:
+        self.board: Board = board
+        self.buttons:list[list] = []
+        self.frame = tk.Frame(root)
+    
+    def clear_frame(self) -> None:
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+    
+    
+
+
 def discover_tile(board: Board, frame:tk.Frame, buttons:list[list], x:int, y:int) -> None:
     label = tk.Label(frame)
     if board.board[y][x] == 1:
