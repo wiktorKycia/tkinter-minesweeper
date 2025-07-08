@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from logic import Board
+from logic import Board, Displayer, Tile
 
 root = tk.Tk()
 root.geometry("450x400")
@@ -42,64 +42,6 @@ max_mines = int(rows.get() * columns.get() * 0.35)
 
 entry_mines = tk.Spinbox(frame, from_=1, to=max_mines, width=5, textvariable=mines)
 entry_mines.grid(row=2, column=1)
-
-
-class Displayer:
-    def __init__(self, board: Board) -> None:
-        self.board: Board = board
-        self.tiles: list[list] = []
-        self.frame = tk.Frame(root)
-
-    def clear_frame(self) -> None:
-        for widget in self.frame.winfo_children():
-            widget.destroy()
-
-    def setup_frame(self) -> None:
-        for y in range(self.board.height):
-            row_of_tiles = []
-            for x in range(self.board.width):
-                bomb = self.board.board[y][x] == 1
-                tile = Tile(self, coords=(x, y), bomb=bomb)
-                tile.display()
-                row_of_tiles.append(tile)
-            self.tiles.append(row_of_tiles)
-        self.frame.pack(fill="both")
-
-
-class Tile:
-    def __init__(self, displayer: Displayer, coords:tuple[int,int], bomb: bool, is_discovered: bool = False, content: str|None = None) -> None:
-        self.widget: tk.Widget
-        
-        self.displayer: Displayer = displayer
-        
-        self.x: int
-        self.y: int
-        self.x, self.y = coords
-        
-        self.bomb: bool = bomb
-        self.discovered: bool = is_discovered
-        
-        self.content: str
-        
-        if is_discovered:
-            self.widget = tk.Label(self.displayer.frame, width=1, height=1)
-            self.content = content if content else ""
-            self.widget.config(text=self.content)
-        else:
-            self.widget = tk.Button(self.displayer.frame, width=1, height=1)
-            self.widget.config(command=lambda: self.discover(self.displayer.board))
-    
-    def discover(self, board:Board) -> None:
-        self.discovered = True
-        self.widget = tk.Label(self.displayer.frame, width=1, height=1)
-        if self.bomb:
-            self.widget.config(text="x")
-        else:
-            self.widget.config(text=board.count_mines_around(self.x, self.y))
-        self.display()
-
-    def display(self) -> None:
-        self.widget.grid(row=self.y, column=self.x)
 
 
 def start_game() -> None:
