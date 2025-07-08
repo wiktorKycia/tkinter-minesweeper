@@ -55,26 +55,15 @@ class Displayer:
             widget.destroy()
 
     def setup_frame(self) -> None:
-        for row in range(self.board.height):
+        for y in range(self.board.height):
             row_of_tiles = []
-            for col in range(self.board.width):
-                button = tk.Button(self.frame, width=1, height=1)
-                button.config(command=lambda: self.discover_tile(x=col, y=row))
-                button.grid(row=row, column=col)
-                row_of_tiles.append(button)
+            for x in range(self.board.width):
+                bomb = self.board.board[y][x] == 1
+                tile = Tile(self, coords=(x, y), bomb=bomb)
+                tile.display()
+                row_of_tiles.append(tile)
             self.tiles.append(row_of_tiles)
         self.frame.pack(fill="both")
-
-    def discover_tile(self, x: int, y: int) -> None:
-        label = tk.Label(frame)
-        if self.board.board[y][x] == 1:
-            label.config(text="x")
-        else:
-            label.config(text=self.board.count_mines_around(x, y))
-        self.tiles[y][x] = label
-
-        self.clear_frame()
-        self.setup_frame()
 
 
 class Tile:
@@ -101,32 +90,27 @@ class Tile:
             self.widget.config(command=lambda: self.discover(self.displayer.board))
     
     def discover(self, board:Board) -> None:
+        self.discovered = True
         self.widget = tk.Label(self.displayer.frame, width=1, height=1)
         if self.bomb:
             self.widget.config(text="x")
         else:
             self.widget.config(text=board.count_mines_around(self.x, self.y))
+        self.display()
 
     def display(self) -> None:
         self.widget.grid(row=self.y, column=self.x)
-        # self.widget.pack()
 
 
 def start_game() -> None:
     for widget in root.winfo_children():
         widget.destroy()
     board = Board(width=columns.get(), height=rows.get(), num_mines=mines.get())
+    board.create_mines()
     displayer = Displayer(board)
 
     displayer.clear_frame()
     displayer.setup_frame()
-
-    for y in range(board.height):
-        for x in range(board.width):
-            bomb = board.board[y][x] == 1
-            tile = Tile(displayer, coords=(x, y), bomb=bomb)
-            tile.display()
-            displayer.tiles[y][x] = tile.widget
 
 
 start_button = tk.Button(root, text="Start Game", command=start_game, padx=10, pady=5)
