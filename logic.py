@@ -1,4 +1,5 @@
 import numpy as np
+import tkinter as tk
 
 class Board:
     def __init__(self, width:int, height:int, num_mines:int):
@@ -7,9 +8,11 @@ class Board:
         self.height = height
         self.num_mines = num_mines
         self.board = np.zeros((self.height, self.width), dtype=int)
+        self.reset_mines()
     
-    def create_mines(self) -> None:
+    def reset_mines(self) -> None:
         """Places mines on the board."""
+        self.board = np.zeros((self.height, self.width), dtype=int)
         mine_positions = np.random.choice(self.width * self.height, self.num_mines, replace=False)
         print(mine_positions)
         for mine in mine_positions:
@@ -19,6 +22,7 @@ class Board:
         print(self.board)
     
     def count_mines_around(self, x:int, y:int) -> int:
+        """Counts the number of mines around a point of given coordinates"""
         result = 0
         for i in range(max(y-1, 0), min(y+2, self.height)):
             for j in range(max(x-1, 0), min(x+2, self.width)):
@@ -27,8 +31,62 @@ class Board:
                         result += 1
                 except IndexError:
                     pass
-        return result                
+        return result
 
-# b = Board(6, 4, 9)
-# b.create_mines()
-# print([[b.count_mines_around(i,j) for i in range(b.width)] for j in range(b.height)])
+
+class Displayer:
+    def __init__(self, board: Board) -> None:
+        self.board: Board = board
+        self.tiles: list[list] = []
+        self.frame = tk.Frame(root)
+
+    def clear_frame(self) -> None:
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
+    def setup_frame(self) -> None:
+        for y in range(self.board.height):
+            row_of_tiles = []
+            for x in range(self.board.width):
+                bomb = self.board.board[y][x] == 1
+                tile = Tile(self, coords=(x, y), bomb=bomb)
+                tile.display()
+                row_of_tiles.append(tile)
+            self.tiles.append(row_of_tiles)
+        self.frame.pack(fill="both")
+
+
+class Tile:
+    def __init__(self, displayer: Displayer, coords:tuple[int,int], bomb: bool, is_discovered: bool = False, content: str|None = None) -> None:
+        self.widget: tk.Widget
+        
+        self.displayer: Displayer = displayer
+        
+        self.x: int
+        self.y: int
+        self.x, self.y = coords
+        
+        self.bomb: bool = bomb
+        self.discovered: bool = is_discovered
+        
+        self.content: str
+        
+        if is_discovered:
+            self.widget = tk.Label(self.displayer.frame, width=1, height=1)
+            self.content = content if content else ""
+            self.widget.config(text=self.content)
+        else:
+            self.widget = tk.Button(self.displayer.frame, width=1, height=1)
+            self.widget.config(command=lambda: self.discover(self.displayer.board))
+    
+    def discover(self, board:Board) -> None:
+        self.discovered = True
+        self.widget = tk.Label(self.displayer.frame, width=1, height=1)
+        if self.bomb:
+            self.widget.config(text="x")
+        else:
+            self.widget.config(text=board.count_mines_around(self.x, self.y))
+        self.display()
+
+    def display(self) -> None:
+        self.widget.grid(row=self.y, column=self.x)
