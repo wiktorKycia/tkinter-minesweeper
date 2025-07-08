@@ -106,7 +106,6 @@ def start_game() -> None:
     for widget in root.winfo_children():
         widget.destroy()
     board = Board(width=columns.get(), height=rows.get(), num_mines=mines.get())
-    board.create_mines()
     displayer = Displayer(board)
 
     displayer.clear_frame()

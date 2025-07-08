@@ -7,9 +7,11 @@ class Board:
         self.height = height
         self.num_mines = num_mines
         self.board = np.zeros((self.height, self.width), dtype=int)
+        self.reset_mines()
     
-    def create_mines(self) -> None:
+    def reset_mines(self) -> None:
         """Places mines on the board."""
+        self.board = np.zeros((self.height, self.width), dtype=int)
         mine_positions = np.random.choice(self.width * self.height, self.num_mines, replace=False)
         print(mine_positions)
         for mine in mine_positions:
@@ -19,6 +21,7 @@ class Board:
         print(self.board)
     
     def count_mines_around(self, x:int, y:int) -> int:
+        """Counts the number of mines around a point of given coordinates"""
         result = 0
         for i in range(max(y-1, 0), min(y+2, self.height)):
             for j in range(max(x-1, 0), min(x+2, self.width)):
