@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from logic import Board, Displayer, Tile
+from logic import Board, Tile
 
 root = tk.Tk()
 root.geometry("450x400")
@@ -43,6 +43,26 @@ max_mines = int(rows.get() * columns.get() * 0.35)
 entry_mines = tk.Spinbox(frame, from_=1, to=max_mines, width=5, textvariable=mines)
 entry_mines.grid(row=2, column=1)
 
+class Displayer:
+    def __init__(self, board: Board) -> None:
+        self.board: Board = board
+        self.tiles: list[list] = []
+        self.frame = tk.Frame(root)
+
+    def clear_frame(self) -> None:
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
+    def setup_frame(self) -> None:
+        for y in range(self.board.height):
+            row_of_tiles = []
+            for x in range(self.board.width):
+                bomb = self.board.board[y][x] == 1
+                tile = Tile(self, coords=(x, y), bomb=bomb)
+                tile.display()
+                row_of_tiles.append(tile)
+            self.tiles.append(row_of_tiles)
+        self.frame.pack(fill="both")
 
 def start_game() -> None:
     for widget in root.winfo_children():

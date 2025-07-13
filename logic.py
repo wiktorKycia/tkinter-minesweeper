@@ -1,5 +1,5 @@
+from __future__ import annotations
 import numpy as np
-import tkinter as tk
 
 class Board:
     def __init__(self, width:int, height:int, num_mines:int):
@@ -34,27 +34,12 @@ class Board:
         return result
 
 
-class Displayer:
-    def __init__(self, board: Board) -> None:
-        self.board: Board = board
-        self.tiles: list[list] = []
-        self.frame = tk.Frame(root)
 
-    def clear_frame(self) -> None:
-        for widget in self.frame.winfo_children():
-            widget.destroy()
+from typing import TYPE_CHECKING
 
-    def setup_frame(self) -> None:
-        for y in range(self.board.height):
-            row_of_tiles = []
-            for x in range(self.board.width):
-                bomb = self.board.board[y][x] == 1
-                tile = Tile(self, coords=(x, y), bomb=bomb)
-                tile.display()
-                row_of_tiles.append(tile)
-            self.tiles.append(row_of_tiles)
-        self.frame.pack(fill="both")
-
+if TYPE_CHECKING:
+    from main import Displayer
+import tkinter as tk
 
 class Tile:
     def __init__(self, displayer: Displayer, coords:tuple[int,int], bomb: bool, is_discovered: bool = False, content: str|None = None) -> None:
