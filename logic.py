@@ -66,12 +66,14 @@ class Tile:
     
     def discover(self, board:Board) -> None:
         self.discovered = True
-        self.widget = tk.Label(self.displayer.frame, width=1, height=1)
+        new_widget = tk.Label(self.displayer.frame, width=1, height=1)
         if self.bomb:
-            self.widget.config(text="x")
+            new_widget.config(text="x")
         else:
-            self.widget.config(text=board.count_mines_around(self.x, self.y))
-        self.display()
-
+            new_widget.config(text=board.count_mines_around(self.x, self.y))
+        self.widget.destroy()
+        self.widget = new_widget
+        self.widget.grid(row=self.y, column=self.x)
+    
     def display(self) -> None:
         self.widget.grid(row=self.y, column=self.x)
