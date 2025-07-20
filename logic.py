@@ -71,9 +71,19 @@ class Tile:
             new_widget.config(text="x")
         else:
             new_widget.config(text=board.count_mines_around(self.x, self.y))
+            self.discover_next(board)
         self.widget.destroy()
         self.widget = new_widget
         self.widget.grid(row=self.y, column=self.x)
+    
+    def discover_next(self, board: Board):
+        for i in range(max(self.y-1, 0), min(self.y+2, board.height)):
+            for j in range(max(self.x-1, 0), min(self.x+2, board.width)):
+                try:
+                    if not self.displayer.tiles[i][j].bomb and board.count_mines_around(self.x, self.y) == 0:
+                        self.displayer.tiles[i][j].discover(board)
+                except IndexError:
+                    pass
     
     def display(self) -> None:
         self.widget.grid(row=self.y, column=self.x)
