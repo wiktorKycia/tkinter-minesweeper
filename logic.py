@@ -77,13 +77,46 @@ class Tile:
         self.widget.grid(row=self.y, column=self.x)
     
     def discover_next(self, board: Board):
-        for i in range(max(self.y-1, 0), min(self.y+2, board.height)):
-            for j in range(max(self.x-1, 0), min(self.x+2, board.width)):
-                try:
-                    if not self.displayer.tiles[i][j].bomb and board.count_mines_around(self.x, self.y) == 0 and self.displayer.tiles[i][j] is not self:
-                        self.displayer.tiles[i][j].discover(board)
-                except IndexError:
-                    pass
-    
+        # Only proceed if this tile has no bombs around it
+        if board.count_mines_around(self.x, self.y) != 0:
+            return
+        
+        # Use a queue-based approach instead of recursion
+        from collections import deque
+        queue = deque([(self.x, self.y)])
+        visited = set([(self.x, self.y)])
+        
+        while queue:
+            x, y = queue.popleft()
+            
+            for i in range(max(y-1, 0), min(y+2, board.height)):
+                for j in range(max(x-1, 0), min(x+2, board.width)):
+                    # Skip if already visited or out of bounds
+                    if (j, i) in visited:
+                        continue
+                        
+                    try:
+                        neighbor = self.displayer.tiles[i][j]
+                        visited.add((j, i))
+                        
+                        # Skip if already discovered or is a bomb
+                        if neighbor.discovered or neighbor.bomb:
+                            continue
+                        
+                        # Discover this neighbor
+                        neighbor.discovered = True
+                        new_widget = tk.Label(neighbor.displayer.frame, width=1, height=1)
+                        bombs_around = board.count_mines_around(j, i)
+                        new_widget.config(text=bombs_around)
+                        neighbor.widget.destroy()
+                        neighbor.widget = new_widget
+                        neighbor.widget.grid(row=i, column=j)
+                        
+                        # If this neighbor also has no bombs around, add it to queue
+                        if bombs_around == 0:
+                            queue.append((j, i))
+                    except IndexError:
+                        pass
+        
     def display(self) -> None:
         self.widget.grid(row=self.y, column=self.x)
