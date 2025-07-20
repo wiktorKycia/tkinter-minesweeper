@@ -80,7 +80,7 @@ class Tile:
         for i in range(max(self.y-1, 0), min(self.y+2, board.height)):
             for j in range(max(self.x-1, 0), min(self.x+2, board.width)):
                 try:
-                    if not self.displayer.tiles[i][j].bomb and board.count_mines_around(self.x, self.y) == 0:
+                    if not self.displayer.tiles[i][j].bomb and board.count_mines_around(self.x, self.y) == 0 and self.displayer.tiles[i][j] is not self:
                         self.displayer.tiles[i][j].discover(board)
                 except IndexError:
                     pass
